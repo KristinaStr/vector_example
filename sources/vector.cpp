@@ -143,7 +143,7 @@ bool operator !=(vector_t const & lhs, vector_t const & rhs)
     bool success = true;
     if (lhs == rhs)
     {
-        success != success;
+        success = !success;
     }
 	return success;
 	
