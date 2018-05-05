@@ -107,7 +107,7 @@ void vector_t::pop_back()
             mas[i] = data_[i];
         }
          delete [] data_;
-        mas =  data_;
+        data_ =  mas;
     }
 }
 
