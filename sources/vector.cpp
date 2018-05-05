@@ -113,20 +113,12 @@ void vector_t::pop_back()
 
 int & vector_t::operator [](std::size_t index)
 {
-
-        if(index < size_)
-	{
-            return (*this)[index];
-        }
-        else
-	{
-            throw std::out_of_range("Invalid range") ;
-	}	
+	return data_[index];
 }
 
 int vector_t::operator [](std::size_t index) const
 {
-	return data_[];
+	return data_[index];
 	
 }
 
