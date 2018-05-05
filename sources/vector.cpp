@@ -97,7 +97,7 @@ void vector_t::pop_back()
 {
 	if (size_ == 0) return;
     size_ -- ;
-    if (size_ == 0 || size_*2 == capacity_)
+    if (size_ == 0 || size_*4 == capacity_)
     {
         int *mas;
         capacity_= capacity_/2;
