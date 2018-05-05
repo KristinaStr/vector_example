@@ -95,14 +95,14 @@ void vector_t::push_back(int value)
 
 void vector_t::pop_back()
 {
-	if (size == 0) return;
-    size -- ;
-    if (size == 0 || size_*2 == capacity_)
+	if (size_ == 0) return;
+    size_ -- ;
+    if (size_ == 0 || size_*2 == capacity_)
     {
         int *mas;
         capacity_= capacity_/2;
         mas = new int [ capacity_];
-        for (unsigned int i = 0; i < size; i++)
+        for (unsigned int i = 0; i < size_; i++)
         {
             mas[i] = data_[i];
         }
@@ -141,7 +141,7 @@ bool operator !=(vector_t const & lhs, vector_t const & rhs)
 {
 	
     bool success = true;
-    if (lhs = rhs)
+    if (lhs == rhs)
     {
         success != success;
     }
