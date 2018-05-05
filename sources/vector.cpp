@@ -5,18 +5,7 @@
 #include "vector.hpp"
 
 
-class vector_t
-{
-    int *data_;
-    unsigned int size_;
-    unsigned int capacity_;
-public:
-    vector_t();
-    vector_t(vector_t const & other);
-    void push_back(int);
-    std::size_t size() const;
-    std::size_t capacity() const;
-};
+
 
 
 vector_t::vector_t()
