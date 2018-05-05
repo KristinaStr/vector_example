@@ -34,7 +34,7 @@ vector_t & vector_t::operator =(vector_t const & other)
         size_ = other.size_;
         capacity_ = other.capacity_;
         data_ =  new int [capacity_];
-        for (unsigned int i = 0; i < size; i++)
+        for (unsigned int i = 0; i < size_; i++)
         {
             data_[i] = other.data_[i];
         }
@@ -48,7 +48,7 @@ bool vector_t::operator ==(vector_t const & other) const
     if (size_ == other.size_ && capacity_ == other.capacity_)
     {
         success = true;
-        for (unsigned int i = 0; i < size; i++)
+        for (unsigned int i = 0; i < size_; i++)
         {
             if (data_[i] != other.data_[i])
             {
