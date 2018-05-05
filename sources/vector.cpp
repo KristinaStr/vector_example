@@ -126,14 +126,7 @@ int & vector_t::operator [](std::size_t index)
 
 int vector_t::operator [](std::size_t index) const
 {
-	if(index < size_)
-	{
-            return (*this)[index];
-        }
-        else
-	{
-            throw std::out_of_range("Invalid range") ;
-        }
+	return data_[];
 	
 }
 
