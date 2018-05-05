@@ -1,7 +1,6 @@
 #include <iostream>
 
-class vector_t
-{
+class vector_t{
 private:
 	int * elements_;
 	std::size_t size_;
