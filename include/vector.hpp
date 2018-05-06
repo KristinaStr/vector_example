@@ -25,7 +25,7 @@ public:
         }
     }
 
-    vector_t operator=(vector_t<T> const &other) {
+    vector_t<T> & operator=(vector_t<T> const &other) {
         if (this != &other) {
             delete[] data_;
             size_ = other.size_;
@@ -109,7 +109,7 @@ public:
     }
 };
 
-template <typname T>
+template <typename T>
     bool operator!=(vector_t<T> const &lhs, vector_t<T> const &rhs) {
 
         bool success = true;
