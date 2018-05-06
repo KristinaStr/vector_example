@@ -124,5 +124,5 @@ TEST_CASE("Other_type")
 {
 	vector_t<double> vector ;
 	vector.push_back(2.1);
-	REQUIRE( vector[]) == 2.1);
+	REQUIRE( vector[0] == 2.1);
 }
