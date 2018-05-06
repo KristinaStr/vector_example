@@ -1,11 +1,9 @@
-
 #include <iostream>
 #include <algorithm>
 #include <cassert>
 
 
 template <typename T>
-
 class vector_t {
 private:
     T *data_;
@@ -111,6 +109,7 @@ public:
     }
 };
 
+template <typname T>
     bool operator!=(vector_t<T> const &lhs, vector_t<T> const &rhs) {
 
         bool success = true;
