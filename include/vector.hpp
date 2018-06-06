@@ -1,121 +1,110 @@
 #include <iostream>
-#include <algorithm>
-#include <cassert>
+#include <sstream>
+#include <vector>
+#include<string>
+#include<stdexcept>
 
-
-template <typename T>
-class vector_t {
+class graph_t
+{
 private:
-    T *data_;
-    std::size_t size_;
-    std::size_t capacity_;
+    unsigned count_of_verticals;
+    bool ** data;
 public:
-    vector_t() {
-        data_ = nullptr;
-        size_ = 0;
-        capacity_ = 0;
-    }
-
-    vector_t(vector_t<T> const &other) {
-        size_ = other.size_;
-        capacity_ = other.capacity_;
-        data_ = new T[capacity_];
-        for (unsigned int i = 0; i < size_; i++) {
-            data_[i] = other.data_[i];
+    graph_t(unsigned N)
+    {
+        count_of_verticals = N;
+        data = new bool * [count_of_verticals];
+        for (std::size_t i = 0; i < count_of_verticals; ++i)
+        {
+            data[i] = new bool [count_of_verticals];
         }
     }
 
-    vector_t<T> & operator=(vector_t<T> const &other) {
-        if (this != &other) {
-            delete[] data_;
-            size_ = other.size_;
-            capacity_ = other.capacity_;
-            data_ = new T[capacity_];
-            for (unsigned int i = 0; i < size_; i++) {
-                data_[i] = other.data_[i];
-            }
-        }
-        return *this;
+    graph_t()
+    {
+        count_of_verticals = 0;
+        data = nullptr;
     }
 
-    bool operator==(vector_t<T> const &other) const {
-        bool success = false;
-        if (size_ == other.size_ && capacity_ == other.capacity_) {
-            success = true;
-            for (unsigned int i = 0; i < size_; i++) {
-                if (data_[i] != other.data_[i]) {
-                    success = false;
-                    break;
+    graph_t & operator=(graph_t const &) = delete;
+
+    graph_t(graph_t const &) = delete;
+
+    ~graph_t()
+    {
+        for (std::size_t i = 0; i < count_of_verticals; ++i)
+        {
+            delete[] data[i];
+        }
+        delete[] data;
+    }
+
+    unsigned size_V()
+    {
+        return count_of_verticals;
+    }
+
+    void read(std::istringstream& stream);
+
+private:
+    void help(unsigned index, std::vector<unsigned> & used, std::vector<unsigned> & res)
+    {
+        used[index] = true;
+        res.push_back(index + 1);
+        for (unsigned j = 0; j < count_of_verticals; j++) {
+            if (data[index][j])
+            {
+                if (!(used)[j])
+                {
+                    help(j, used, res);
                 }
             }
         }
-        return success;
-
     }
 
-    ~vector_t() {
-        delete[] data_;
-    }
+public:
+    void res_graph(std::ostream & ostream, std::vector<unsigned> res);
 
-    std::size_t size() const {
-        return size_;
-    }
-
-    std::size_t capacity() const {
-        return capacity_;
-    }
-
-    void push_back(T value) {
-        if (size_ == capacity_) {
-            auto new_capacity = (capacity_ == 0) ? 1 : capacity_ * 2;
-
-            T *mas = new T[new_capacity];
-            for (unsigned int i = 0; i < size_; i++) {
-                mas[i] = data_[i];
-            }
-
-            delete[] data_;
-
-            capacity_ = new_capacity;
-            data_ = mas;
+    std::vector<unsigned> dfs(unsigned index)
+    {
+        std::vector<unsigned> used, res;
+        used.reserve(count_of_verticals);
+        for (unsigned i = 0; i < count_of_verticals; i++) {
+            used.push_back(false);
         }
-
-        data_[size_] = value;
-        size_++;
-    }
-
-    void pop_back() {
-        if (size_ == 0) return;
-        size_--;
-        if (size_ == 0 || size_ * 4 == capacity_) {
-            T *mas;
-            capacity_ = capacity_ / 2;
-            mas = new T[capacity_];
-            for (unsigned int i = 0; i < size_; i++) {
-                mas[i] = data_[i];
-            }
-            delete[] data_;
-            data_ = mas;
-        }
-    }
-
-    T &operator[](std::size_t index) {
-        return data_[index];
-    }
-
-    T operator[](std::size_t index) const {
-        return data_[index];
-
+        help(index, used, res);
+        return res;
     }
 };
 
-template <typename T>
-    bool operator!=(vector_t<T> const &lhs, vector_t<T> const &rhs) {
-
-        bool success = true;
-        if (lhs == rhs) {
-            success = !success;
+void graph_t::read(std::istringstream& stream)
+{
+    for (std::size_t i = 0; i < count_of_verticals; i++)
+    {
+        for (std::size_t j = 0; j < count_of_verticals; j++)
+        {
+            unsigned a;
+            if (stream >> a)
+            {
+                if (a == 1 || a == 0)
+                {
+                    data[i][j] = a;
+                }
+                else throw std::invalid_argument("Error 1");
+            }
         }
-        return success;
-
+        if (data[i][i] != 0)
+        {
+            throw std::invalid_argument("Error 2");
+        }
     }
+}
+
+void graph_t::res_graph(std::ostream & ostream, std::vector<unsigned> res)
+{
+    for (unsigned i : res)
+    {
+        ostream << i << ' ';
+    }
+
+}
