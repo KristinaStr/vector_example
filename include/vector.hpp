@@ -1,121 +1,211 @@
-#include <iostream>
-#include <algorithm>
-#include <cassert>
-
+#include <sstream>
+#include<iostream>
+#include<string>
 
 template <typename T>
-class vector_t {
+class tree_t
+{
 private:
-    T *data_;
-    std::size_t size_;
-    std::size_t capacity_;
+	struct node_t {
+		node_t * left;
+		node_t * right;
+		T value;
+	};
+private:
+	node_t * root_;
 public:
-    vector_t() {
-        data_ = nullptr;
-        size_ = 0;
-        capacity_ = 0;
-    }
+	tree_t()
+	{
+		root_= nullptr;
+	}
+	void del(node_t * node)
+	{	
+		if (root_ != nullptr) {
+			if (node->left) del (node->left);
+			if (node->right) del (node->right);
+			delete node;
+		}
+	}
+	~tree_t()
+	{
+			del(root_);
+			//root_ = nullptr;
+	}
+	
+	bool isEmpty()
+	{
+		return (!root_);
+	}
+	
+	void insert(T value)
+	{
+		node_t * node = new node_t;
+		node->value = value;
+		node->left = nullptr;
+		node->right = nullptr;
 
-    vector_t(vector_t<T> const &other) {
-        size_ = other.size_;
-        capacity_ = other.capacity_;
-        data_ = new T[capacity_];
-        for (unsigned int i = 0; i < size_; i++) {
-            data_[i] = other.data_[i];
-        }
-    }
+		if (root_ == nullptr) {
+			root_ = node;
+		}
+		else {
+			node_t * branch = root_;
+			while (branch != nullptr){
+				if (value > branch->value){
+					if (branch->right != nullptr) {
+						branch = branch->right;
+					}
+					else {
+						branch->right = node;
+						return;
+					}
+				}
+				else {
+					if (value < branch->value){
+						if (branch->left != nullptr) {
+							branch = branch->left;
+						}
+						else {
+							branch->left = node;
+							return;
+						}
+					}
+					else
+					{
+						return;
+					}
 
-    vector_t<T> & operator=(vector_t<T> const &other) {
-        if (this != &other) {
-            delete[] data_;
-            size_ = other.size_;
-            capacity_ = other.capacity_;
-            data_ = new T[capacity_];
-            for (unsigned int i = 0; i < size_; i++) {
-                data_[i] = other.data_[i];
+				}
+			}
+		}
+	}
+	bool find(T value) const
+	{
+		node_t * branch = root_;
+		while (branch != nullptr){
+			if (value == branch->value) {
+				return true;
+			}
+			else {
+				if (value > branch->value) {
+					branch = branch->right;
+				}
+				else {
+					branch = branch->left;
+				}
+			}
+		}
+		return false;
+	}
+	
+	node_t * root() const
+	{
+		return  root_;
+	}
+	void print(std::ostream & stream ,  node_t * node , size_t i = 1) const
+	{
+		if (node->right) {
+			i++;
+			print(stream ,node->right, i);
+			i--;
+		}
+		for (size_t k = 0; k < i; k++) {
+			stream << "--";
+		}
+			stream << node->value << std::endl;
+		if (node->left) {
+			i++;
+			print(stream ,node->left, i);
+			i--;
+		}
+	}
+	
+	
+	tree_t(std::initializer_list<T> keys)
+	{
+		root_ = nullptr;
+		size_t size = keys.size();
+		for (size_t i = 0; i < size; i++) {
+			T a = *(keys.begin()+i);
+			insert(a);
+		}
+	}
+	void delete_one_child(node_t* node, node_t* child, node_t* parent){
+            if(parent){
+                if(parent->right == node) parent->right = child;
+                else parent->left = child;
             }
+            else root_ = child;
+            if(node->right == child) node->right = nullptr;
+            else node->left = nullptr;
+            
         }
-        return *this;
-    }
-
-    bool operator==(vector_t<T> const &other) const {
-        bool success = false;
-        if (size_ == other.size_ && capacity_ == other.capacity_) {
-            success = true;
-            for (unsigned int i = 0; i < size_; i++) {
-                if (data_[i] != other.data_[i]) {
-                    success = false;
-                    break;
+      
+        
+        node_t* left_child(node_t* node){
+            while(node->left != nullptr){
+                node = node->left;
+            }
+            return node;
+        }
+	node_t* left_child_parent(node_t* node){
+            node_t* parent = node;
+            node = node->right;
+            while(node->left != nullptr){
+                parent = node;
+                node = node->left;
+            }
+            return parent;
+        }
+          void transplant(node_t* node, node_t* parent){
+              node_t* child_left = left_child(node->right);
+              node_t* child_left_parent = left_child_parent(node);
+              if(child_left->right ) {child_left_parent->left = child_left->right;
+                                    child_left->right = nullptr; 
+              }
+              else child_left_parent->left = nullptr;
+              if(parent){
+                  if(parent->right == node) parent->right = child_left;
+                  else parent->left = child_left;
+              }
+              else root_ = child_left;
+                                      
+             
+              if(node->right != child_left){child_left->right = node->right;
+              node->right = nullptr;}
+              
+              if(node->left) {child_left->left = node->left;
+              node->left = nullptr;}
+              
+          }
+	bool remove(T key)
+	{   node_t* node = root_;
+            node_t* parent = nullptr;
+            while(node->value != key && node){
+                 parent = node;
+            if (key < node->value)
+                node = node->left;
+            else
+                node = node->right;
+            }
+            if(node == nullptr) return false;
+            
+            if(node->left == nullptr && node->right == nullptr){
+                if(parent){
+                    if(parent->right == node) parent->right = nullptr;
+                    else parent->left = nullptr;
                 }
+                else root_ = nullptr;
+               
             }
-        }
-        return success;
-
-    }
-
-    ~vector_t() {
-        delete[] data_;
-    }
-
-    std::size_t size() const {
-        return size_;
-    }
-
-    std::size_t capacity() const {
-        return capacity_;
-    }
-
-    void push_back(T value) {
-        if (size_ == capacity_) {
-            auto new_capacity = (capacity_ == 0) ? 1 : capacity_ * 2;
-
-            T *mas = new T[new_capacity];
-            for (unsigned int i = 0; i < size_; i++) {
-                mas[i] = data_[i];
+            else if(node->left && node->right == nullptr){
+                delete_one_child(node,node->left,parent);
             }
-
-            delete[] data_;
-
-            capacity_ = new_capacity;
-            data_ = mas;
-        }
-
-        data_[size_] = value;
-        size_++;
-    }
-
-    void pop_back() {
-        if (size_ == 0) return;
-        size_--;
-        if (size_ == 0 || size_ * 4 == capacity_) {
-            T *mas;
-            capacity_ = capacity_ / 2;
-            mas = new T[capacity_];
-            for (unsigned int i = 0; i < size_; i++) {
-                mas[i] = data_[i];
+            else if(node->right && node->left == nullptr){
+                delete_one_child(node,node->right,parent);
             }
-            delete[] data_;
-            data_ = mas;
-        }
-    }
-
-    T &operator[](std::size_t index) {
-        return data_[index];
-    }
-
-    T operator[](std::size_t index) const {
-        return data_[index];
-
-    }
+            else if(node->right && node->left){
+                transplant(node,parent);
+                
+            }
+	}
 };
-
-template <typename T>
-    bool operator!=(vector_t<T> const &lhs, vector_t<T> const &rhs) {
-
-        bool success = true;
-        if (lhs == rhs) {
-            success = !success;
-        }
-        return success;
-
-    }
