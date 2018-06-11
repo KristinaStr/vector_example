@@ -36,7 +36,7 @@ public:
         return head->value;
     }
 
-    queue_t(queue_t<T> const & other)
+    queue_t(queue_t<T> const & other): queue_t ()
     {
         data_t* data = other.head_r();
         while(data != nullptr){
