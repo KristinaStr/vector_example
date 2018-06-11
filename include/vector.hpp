@@ -39,7 +39,7 @@ public:
         delete[] data;
     }
 
-    unsigned size_V()
+    unsigned size_count_of_verticals()
     {
         return count_of_verticals;
     }
