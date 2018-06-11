@@ -103,6 +103,19 @@ TEST_CASE("poping elements double")
 	REQUIRE( queue.taill(queue.tail_r()) == 4 );
 }
 
+TEST_CASE("copy ")
+{
+    queue_t<int> queue;
+    queue.push(3);
+    queue.push(6);
+    
+    
+    queue_t<int> queue2(queue);
+    
+    REQUIRE( queue2.headl(queue2.head_r()) == 3 );
+    REQUIRE( queue2.taill(queue2.tail_r()) == 6 );
+}
+
 TEST_CASE("Error")
 {
 	queue_t<int> queue;
