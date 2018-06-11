@@ -1,121 +1,112 @@
 #include <iostream>
-#include <algorithm>
-#include <cassert>
-
+#include <sstream>
+#include <utility>
 
 template <typename T>
-class vector_t {
+class queue_t
+{
 private:
-    T *data_;
-    std::size_t size_;
-    std::size_t capacity_;
+    struct data_t
+    {
+        data_t* next;
+        T value;
+    };
+private:
+    data_t* head;
+    data_t* tail;
+
 public:
-    vector_t() {
-        data_ = nullptr;
-        size_ = 0;
-        capacity_ = 0;
+    queue_t()
+    {
+        head = nullptr;
+        tail = nullptr;
     }
 
-    vector_t(vector_t<T> const &other) {
-        size_ = other.size_;
-        capacity_ = other.capacity_;
-        data_ = new T[capacity_];
-        for (unsigned int i = 0; i < size_; i++) {
-            data_[i] = other.data_[i];
+    data_t * head_r() {
+        return head;
+    }
+    data_t * tail_r() {
+        return tail;
+    }
+    T taill(data_t* tailo){
+        return tailo->value;
+    }
+
+    T headl(data_t* heado){
+        return heado->value;
+    }
+
+    queue_t(queue_t<T> const & other)
+    {
+        data_t* data = other.head_r();
+        while(data != nullptr){
+            push(data->value);
+            data = data->next;
         }
+
     }
 
-    vector_t<T> & operator=(vector_t<T> const &other) {
-        if (this != &other) {
-            delete[] data_;
-            size_ = other.size_;
-            capacity_ = other.capacity_;
-            data_ = new T[capacity_];
-            for (unsigned int i = 0; i < size_; i++) {
-                data_[i] = other.data_[i];
-            }
+    queue_t<T> & operator=(queue_t<T> & other)
+    {
+        if(other.head_r() != nullptr){
+            this->~queue_t();
+        }
+
+        data_t* data = other.head_r();
+        while(data != nullptr){
+            push(data->value);
+            data = data->next;
         }
         return *this;
     }
 
-    bool operator==(vector_t<T> const &other) const {
-        bool success = false;
-        if (size_ == other.size_ && capacity_ == other.capacity_) {
-            success = true;
-            for (unsigned int i = 0; i < size_; i++) {
-                if (data_[i] != other.data_[i]) {
-                    success = false;
-                    break;
-                }
-            }
-        }
-        return success;
-
-    }
-
-    ~vector_t() {
-        delete[] data_;
-    }
-
-    std::size_t size() const {
-        return size_;
-    }
-
-    std::size_t capacity() const {
-        return capacity_;
-    }
-
-    void push_back(T value) {
-        if (size_ == capacity_) {
-            auto new_capacity = (capacity_ == 0) ? 1 : capacity_ * 2;
-
-            T *mas = new T[new_capacity];
-            for (unsigned int i = 0; i < size_; i++) {
-                mas[i] = data_[i];
-            }
-
-            delete[] data_;
-
-            capacity_ = new_capacity;
-            data_ = mas;
-        }
-
-        data_[size_] = value;
-        size_++;
-    }
-
-    void pop_back() {
-        if (size_ == 0) return;
-        size_--;
-        if (size_ == 0 || size_ * 4 == capacity_) {
-            T *mas;
-            capacity_ = capacity_ / 2;
-            mas = new T[capacity_];
-            for (unsigned int i = 0; i < size_; i++) {
-                mas[i] = data_[i];
-            }
-            delete[] data_;
-            data_ = mas;
+    ~queue_t()
+    {
+        if (head != nullptr)
+        {
+            del (head);
         }
     }
 
-    T &operator[](std::size_t index) {
-        return data_[index];
+    void del(data_t* run_)
+    {
+        if (run_ != nullptr)
+        {
+            if (run_->next != nullptr)
+            {
+                del(run_->next);
+            }
+            delete run_;
+        }
     }
 
-    T operator[](std::size_t index) const {
-        return data_[index];
-
+    void push(T val ){
+        if (head == nullptr)
+        {
+            head = new data_t;
+            head->value = val;
+            head->next = nullptr;
+            tail = head;
+        }
+        else
+        {
+            tail->next = new data_t;
+            tail = tail->next;
+            tail->value = val;
+            tail->next = nullptr;
+        }
+    }
+    T pop (){
+        if(head != nullptr){
+            T previoushead = head->value;
+            data_t* node = head->next;
+            delete head;
+            head=node;
+            return previoushead;
+            delete node;
+        }
+        else {
+            throw std::logic_error("Error");
+        }
     }
 };
-
-template <typename T>
-    bool operator!=(vector_t<T> const &lhs, vector_t<T> const &rhs) {
-
-        bool success = true;
-        if (lhs == rhs) {
-            success = !success;
-        }
-        return success;
-
-    }
