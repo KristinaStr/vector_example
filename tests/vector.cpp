@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include <sstream>
 
-#include "queue.hpp"
+#include "vector.hpp"
 
 TEST_CASE("creating queue")
 {
