@@ -1,7 +1,7 @@
 #include <catch.hpp>
 #include <sstream>
 
-#include "graph.hpp"
+#include "vector.hpp"
 
 TEST_CASE("Create")
 {
