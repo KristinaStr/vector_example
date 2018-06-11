@@ -3,11 +3,6 @@
 
 #include "vector.hpp"
 
-TEST_CASE("Create")
-{
-	graph_t graph;
-	REQUIRE(graph.size_сount_of_verticals() == 0);
-}
 
 TEST_CASE("Test my graph")
 {
