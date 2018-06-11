@@ -1,128 +1,110 @@
 #include <catch.hpp>
 #include <sstream>
 
-#include "vector.hpp"
+#include "queue.hpp"
 
-TEST_CASE("creating vector")
+TEST_CASE("creating queue")
 {
-	vector_t<int> vector;
-	REQUIRE( vector.size() == 0 );
-	REQUIRE( vector.capacity() == 0 );
+	queue_t<int> queue;
+	REQUIRE( queue.heado() == nullptr );
+	REQUIRE( queue.tailo() == nullptr );
 }
 
-TEST_CASE("copying vector")
+TEST_CASE("copy queue")
 {
-	vector_t<double> vector;
-	vector.push_back(0.33);
-
-	vector_t<double> copy(vector);
-	REQUIRE( copy == vector );
+	queue_t<int> queue;
+	queue_t<int> queue2;
+	queue.push(3);
+	queue.push(6);
+	
+	queue2.push(1);
+	
+	queue2 = queue;
+	
+	REQUIRE( queue2.headl(queue2.heado()) == 3 );
+	REQUIRE( queue2.taill(queue2.tailo()) == 6 );
 }
 
-TEST_CASE("assigning vector")
+TEST_CASE("pushing elements int")
 {
-	vector_t<int> vector1;
-	vector_t<int> vector2;
+	queue_t <int> queue;
 
-	vector1.push_back(1);
-	vector2.push_back(2);
+	queue.push(1);
+	REQUIRE( queue.headl(queue.heado()) == 1 );
+	REQUIRE( queue.taill(queue.tailo()) == 1 );
 
-	vector1 = vector2;
-	REQUIRE( vector1 == vector2 );
+	queue.push(2);
+	REQUIRE( queue.headl(queue.heado()) == 1 );
+	REQUIRE( queue.taill(queue.tailo()) == 2 );
+
+	queue.push(3);
+	REQUIRE( queue.headl(queue.heado()) == 1 );
+	REQUIRE( queue.taill(queue.tailo()) == 3 );
 }
 
-TEST_CASE("equaling vector")
+TEST_CASE("pushing elements double")
 {
-	vector_t<int> vector1;
-	vector_t<int> vector2;
+	queue_t <double> queue;
 
-	vector1.push_back(1);
-	vector2.push_back(1);
+	queue.push(1);
+	REQUIRE( queue.headl(queue.heado()) == 1 );
+	REQUIRE( queue.taill(queue.tailo()) == 1 );
 
-	REQUIRE( vector1 == vector2 );
+	queue.push(2);
+	REQUIRE( queue.headl(queue.heado()) == 1 );
+	REQUIRE( queue.taill(queue.tailo()) == 2 );
 
-	vector1.push_back(2);
-	REQUIRE( vector1 != vector2 );
+	queue.push(3);
+	REQUIRE( queue.headl(queue.heado()) == 1 );
+	REQUIRE( queue.taill(queue.tailo()) == 3 );
 }
 
-TEST_CASE("indexing vector")
+TEST_CASE("poping elements int")
 {
-	vector_t<int> vector;
+	queue_t <int> queue;
 
-	vector.push_back(1);
+	queue.push(1);
+	queue.push(2);
+	queue.push(3);
+	queue.push(4);
 
-	REQUIRE( vector[0] == 1 );
+	queue.pop();
+	REQUIRE( queue.headl(queue.head_r()) == 2 );
+	REQUIRE( queue.taill(queue.tail_r()) == 4 );
 
-	vector_t<int> const copy(vector);
-	REQUIRE( copy[0] == 1 );
+	queue.pop();
+	REQUIRE( queue.headl(queue.head_r()) == 3 );
+	REQUIRE( queue.taill(queue.tail_r()) == 4 );
+
+	queue.pop();
+	REQUIRE( queue.headl(queue.head_r()) == 4 );
+	REQUIRE( queue.taill(queue.tail_r()) == 4 );
 }
 
-TEST_CASE("pushing elements")
+TEST_CASE("poping elements double")
 {
-	vector_t<int> vector;
+	queue_t <double> queue;
 
-	vector.push_back(1);
-	REQUIRE( vector.size() == 1 );
-	REQUIRE( vector.capacity() == 1 );
+	queue.push(1);
+	queue.push(2);
+	queue.push(3);
+	queue.push(4);
 
-	vector.push_back(2);
-	REQUIRE( vector.size() == 2 );
-	REQUIRE( vector.capacity() == 2 );
+	queue.pop();
+	REQUIRE( queue.headl(queue.head_r()) == 2 );
+	REQUIRE( queue.taill(queue.tail_r()) == 4 );
 
-	vector.push_back(3);
-	REQUIRE( vector.size() == 3 );
-	REQUIRE( vector.capacity() == 4 );
+	queue.pop();
+	REQUIRE( queue.headl(queue.head_r()) == 3 );
+	REQUIRE( queue.taill(queue.tail_r()) == 4 );
 
-	vector.push_back(4);
-	REQUIRE( vector.size() == 4 );
-	REQUIRE( vector.capacity() == 4 );
-
-	vector.push_back(5);
-	REQUIRE( vector.size() == 5 );
-	REQUIRE( vector.capacity() == 8 );
+	queue.pop();
+	REQUIRE( queue.headl(queue.head_r()) == 4 );
+	REQUIRE( queue.taill(queue.tail_r()) == 4 );
 }
 
-TEST_CASE("poping elements")
+TEST_CASE("Error")
 {
-	vector_t<int> vector;
-
-	vector.push_back(1);
-	vector.push_back(2);
-	vector.push_back(3);
-	vector.push_back(4);
-	vector.push_back(5);
-	vector.push_back(6);
-
-	vector.pop_back();
-	REQUIRE( vector.size() == 5 );
-	REQUIRE( vector.capacity() == 8 );
-
-	vector.pop_back();
-	REQUIRE( vector.size() == 4 );
-	REQUIRE( vector.capacity() == 8 );
-
-	vector.pop_back();
-	REQUIRE( vector.size() == 3 );
-	REQUIRE( vector.capacity() == 8 );
-
-	vector.pop_back();
-	REQUIRE( vector.size() == 2 );
-	REQUIRE( vector.capacity() == 4 );
-
-	vector.pop_back();
-	REQUIRE( vector.size() == 1 );
-	REQUIRE( vector.capacity() == 2 );
-
-	vector.pop_back();
-	REQUIRE( vector.size() == 0 );
-	REQUIRE( vector.capacity() == 1 );
-}
-
-
-
-TEST_CASE("Other_type")
-{
-	vector_t<double> vector ;
-	vector.push_back(2.1);
-	REQUIRE( vector[0] == 2.1);
+	queue_t<int> queue;
+	REQUIRE_THROWS_AS( queue.pop() , std::logic_error);
 }
