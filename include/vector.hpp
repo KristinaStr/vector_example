@@ -22,18 +22,18 @@ public:
         tail = nullptr;
     }
 
-    data_t * head_r() {
+    data_t * head_r() const {
         return head;
     }
-    data_t * tail_r() {
+    data_t * tail_r() const {
         return tail;
     }
-    T taill(data_t* tailo){
-        return tailo->value;
+    T taill(data_t const* tail) const {
+        return tail->value;
     }
 
-    T headl(data_t* heado){
-        return heado->value;
+    T headl(data_t const* head) const {
+        return head->value;
     }
 
     queue_t(queue_t<T> const & other)
