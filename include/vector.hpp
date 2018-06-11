@@ -1,121 +1,255 @@
-#include <iostream>
-#include <algorithm>
-#include <cassert>
-
+#include <sstream>
+#include<iostream>
+#include<string>
 
 template <typename T>
-class vector_t {
+class tree_t
+{
 private:
-    T *data_;
-    std::size_t size_;
-    std::size_t capacity_;
+	struct node_t {
+            node_t* parent;
+		node_t * left;
+		node_t * right;
+                bool color = false;
+		T value;
+	};
+private:
+	node_t * root_;
 public:
-    vector_t() {
-        data_ = nullptr;
-        size_ = 0;
-        capacity_ = 0;
-    }
+	tree_t()
+	{
+		root_= nullptr;
+	}
+	void del(node_t * node)
+	{	
+		if (root_ != nullptr) {
+			if (node->left) del (node->left);
+			if (node->right) del (node->right);
+			delete node;
+		}
+	}
+	~tree_t()
+	{
+			del(root_);
+			//root_ = nullptr;
+	}
+	
+	bool isEmpty()
+	{
+		return (!root_);
+	}
+	
+ node_t *    grandparent( node_t* node)
+{
+	if ((node!= nullptr) && (node->parent != nullptr))
+		return node->parent->parent;
+	else
+		return nullptr;
+}
 
-    vector_t(vector_t<T> const &other) {
-        size_ = other.size_;
-        capacity_ = other.capacity_;
-        data_ = new T[capacity_];
-        for (unsigned int i = 0; i < size_; i++) {
-            data_[i] = other.data_[i];
+node_t* uncle( node_t *node)
+{
+	node_t *g = grandparent(node);
+	if (g == NULL)
+		return nullptr; // No grandparent means no uncle
+	if (node->parent == g->left)
+		return g->right;
+	else
+		return g->left;
+}
+
+   void rotate_left(node_t* node) {
+        node_t* vetka = node->right;
+        if(root_ == node){
+            root_ = node->right;
         }
-    }
-
-    vector_t<T> & operator=(vector_t<T> const &other) {
-        if (this != &other) {
-            delete[] data_;
-            size_ = other.size_;
-            capacity_ = other.capacity_;
-            data_ = new T[capacity_];
-            for (unsigned int i = 0; i < size_; i++) {
-                data_[i] = other.data_[i];
-            }
+        vetka->parent = node->parent;
+        if (node->parent != nullptr) {
+            if (node->parent->left == node)
+                node->parent->left = vetka;
+            else
+                node->parent->right = vetka;
         }
-        return *this;
+        node->right = vetka->left;
+        if (vetka->left != nullptr) vetka->left->parent = node;
+        node->parent = vetka;
+        vetka->left = node;
     }
-
-    bool operator==(vector_t<T> const &other) const {
-        bool success = false;
-        if (size_ == other.size_ && capacity_ == other.capacity_) {
-            success = true;
-            for (unsigned int i = 0; i < size_; i++) {
-                if (data_[i] != other.data_[i]) {
-                    success = false;
-                    break;
-                }
-            }
+    void rotate_right(node_t* node) {
+        node_t* vetka = node->left;
+        if(root_ == node){
+            root_ = node->left;
         }
-        return success;
-
-    }
-
-    ~vector_t() {
-        delete[] data_;
-    }
-
-    std::size_t size() const {
-        return size_;
-    }
-
-    std::size_t capacity() const {
-        return capacity_;
-    }
-
-    void push_back(T value) {
-        if (size_ == capacity_) {
-            auto new_capacity = (capacity_ == 0) ? 1 : capacity_ * 2;
-
-            T *mas = new T[new_capacity];
-            for (unsigned int i = 0; i < size_; i++) {
-                mas[i] = data_[i];
-            }
-
-            delete[] data_;
-
-            capacity_ = new_capacity;
-            data_ = mas;
+        vetka->parent = node->parent;
+        if (node->parent != nullptr) {
+            if (node->parent->left == node)
+                node->parent->left = vetka;
+            else
+                node->parent->right = vetka;
         }
+        node->left = vetka->right;
+        if (vetka->right != nullptr) vetka->right->parent = node;
 
-        data_[size_] = value;
-        size_++;
+        node->parent = vetka;
+        vetka->right = node;
     }
 
-    void pop_back() {
-        if (size_ == 0) return;
-        size_--;
-        if (size_ == 0 || size_ * 4 == capacity_) {
-            T *mas;
-            capacity_ = capacity_ / 2;
-            mas = new T[capacity_];
-            for (unsigned int i = 0; i < size_; i++) {
-                mas[i] = data_[i];
-            }
-            delete[] data_;
-            data_ = mas;
-        }
-    }
+void insert_case1(node_t *node)
+{
+	if (node->parent == nullptr)
+		node->color = false;
+	else
+		insert_case2(node);
+}
 
-    T &operator[](std::size_t index) {
-        return data_[index];
-    }
+void insert_case2(node_t *node)
+{
+	if (node->parent->color == false)
+		return; /* Tree is still valid */
+	else
+		insert_case3(node);
+}
+void insert_case3(node_t *node)
+{
+	node_t *u = uncle(node), *g;
 
-    T operator[](std::size_t index) const {
-        return data_[index];
+	if ((u != nullptr) && (u->color == true)) {
+	// && (n->parent->color == RED) Второе условие проверяется в insert_case2, то есть родитель уже является красным.
+		node->parent->color = false;
+		u->color = false;
+		g = grandparent(node);
+		g->color = true;
+		insert_case1(g);
+	} else {
+		insert_case4(node);
+	}
+}
+void insert_case4(node_t  *node)
+{
+	node_t *g = grandparent(node);
 
-    }
+	if ((node == node->parent->right) && (node->parent == g->left)) {
+		rotate_left(node->parent);
+		node = node->left;
+	} else if ((node == node->parent->left) && (node->parent == g->right)) {
+		rotate_right(node->parent);
+		node = node->right;
+	}
+	insert_case5(node);
+}
+
+void insert_case5(node_t *node)
+{
+	node_t *g = grandparent(node);
+
+	node->parent->color = false;
+	g->color = true;
+	if ((node == node->parent->left) && (node->parent == g->left)) {
+		rotate_right(g);
+	} else { /* (n == n->parent->right) && (n->parent == g->right) */
+		rotate_left(g);
+	}
+}
+	void insert(T value)
+	{
+		node_t * node = new node_t;
+		node->value = value;
+		node->left = nullptr;
+		node->right = nullptr;
+
+		if (root_ == nullptr) {
+			root_ = node;
+                        root_->parent = nullptr;
+		}
+		else {
+			node_t * branch = root_;
+			while (branch != nullptr){
+				if (value > branch->value){
+					if (branch->right != nullptr) {
+						branch = branch->right;
+					}
+					else {
+						branch->right = node;
+                                                branch->right->parent = branch;
+                                                branch->right->color = true;
+                                                insert_case1(branch->right);
+						return;
+					}
+				}
+				else {
+					if (value < branch->value){
+						if (branch->left != nullptr) {
+							branch = branch->left;
+						}
+						else {
+							branch->left = node;
+                                                        branch->left->parent = branch;
+                                                        branch->left->color = true;
+                                                        insert_case1(branch->left);
+							return;
+						}
+					}
+					else
+					{
+						return;
+					}
+
+				}
+			}
+		}
+	}
+	bool find(T value) const
+	{
+		node_t * branch = root_;
+		while (branch != nullptr){
+			if (value == branch->value) {
+				return true;
+			}
+			else {
+				if (value > branch->value) {
+					branch = branch->right;
+				}
+				else {
+					branch = branch->left;
+				}
+			}
+		}
+		return false;
+	}
+	
+	node_t * root() const
+	{
+		return  root_;
+	}
+	void print(std::ostream & stream ,  node_t * node , size_t i = 1) const
+	{
+		if (node->right) {
+			i++;
+			print(stream ,node->right, i);
+			i--;
+		}
+		for (size_t k = 0; k < i; k++) {
+			stream << "--";
+		}       
+                if(node->color == true)
+			stream << node->value <<"R"<< std::endl;
+                else  stream << node->value <<"B"<< std::endl;
+		if (node->left) {
+			i++;
+			print(stream ,node->left, i);
+			i--;
+		}
+	}
+	
+	
+	tree_t(std::initializer_list<T> keys)
+	{
+		root_ = nullptr;
+		size_t size = keys.size();
+		for (size_t i = 0; i < size; i++) {
+			T a = *(keys.begin()+i);
+			insert(a);
+		}
+	}
+	
 };
-
-template <typename T>
-    bool operator!=(vector_t<T> const &lhs, vector_t<T> const &rhs) {
-
-        bool success = true;
-        if (lhs == rhs) {
-            success = !success;
-        }
-        return success;
-
-    }
