@@ -6,8 +6,8 @@
 TEST_CASE("creating queue")
 {
 	queue_t<int> queue;
-	REQUIRE( queue.heado() == nullptr );
-	REQUIRE( queue.tailo() == nullptr );
+	REQUIRE( queue.head_r() == nullptr );
+	REQUIRE( queue.tail_r() == nullptr );
 }
 
 TEST_CASE("copy queue")
@@ -21,8 +21,8 @@ TEST_CASE("copy queue")
 	
 	queue2 = queue;
 	
-	REQUIRE( queue2.headl(queue2.heado()) == 3 );
-	REQUIRE( queue2.taill(queue2.tailo()) == 6 );
+	REQUIRE( queue2.headl(queue2.head_r()) == 3 );
+	REQUIRE( queue2.taill(queue2.tail_r()) == 6 );
 }
 
 TEST_CASE("pushing elements int")
@@ -30,16 +30,16 @@ TEST_CASE("pushing elements int")
 	queue_t <int> queue;
 
 	queue.push(1);
-	REQUIRE( queue.headl(queue.heado()) == 1 );
-	REQUIRE( queue.taill(queue.tailo()) == 1 );
+	REQUIRE( queue.headl(queue.head_r()) == 1 );
+	REQUIRE( queue.taill(queue.tail_r()) == 1 );
 
 	queue.push(2);
-	REQUIRE( queue.headl(queue.heado()) == 1 );
-	REQUIRE( queue.taill(queue.tailo()) == 2 );
+	REQUIRE( queue.headl(queue.head_r()) == 1 );
+	REQUIRE( queue.taill(queue.tail_r()) == 2 );
 
 	queue.push(3);
-	REQUIRE( queue.headl(queue.heado()) == 1 );
-	REQUIRE( queue.taill(queue.tailo()) == 3 );
+	REQUIRE( queue.headl(queue.head_r()) == 1 );
+	REQUIRE( queue.taill(queue.tail_r()) == 3 );
 }
 
 TEST_CASE("pushing elements double")
@@ -47,16 +47,16 @@ TEST_CASE("pushing elements double")
 	queue_t <double> queue;
 
 	queue.push(1);
-	REQUIRE( queue.headl(queue.heado()) == 1 );
-	REQUIRE( queue.taill(queue.tailo()) == 1 );
+	REQUIRE( queue.headl(queue.head_r()) == 1 );
+	REQUIRE( queue.taill(queue.tail_r()) == 1 );
 
 	queue.push(2);
-	REQUIRE( queue.headl(queue.heado()) == 1 );
-	REQUIRE( queue.taill(queue.tailo()) == 2 );
+	REQUIRE( queue.headl(queue.head_r()) == 1 );
+	REQUIRE( queue.taill(queue.tail_r()) == 2 );
 
 	queue.push(3);
-	REQUIRE( queue.headl(queue.heado()) == 1 );
-	REQUIRE( queue.taill(queue.tailo()) == 3 );
+	REQUIRE( queue.headl(queue.head_r()) == 1 );
+	REQUIRE( queue.taill(queue.tail_r()) == 3 );
 }
 
 TEST_CASE("poping elements int")
